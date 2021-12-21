@@ -1,7 +1,11 @@
+import math
+
 from src.GraphAlgoInterface import GraphAlgoInterface
 from src.GraphInterface import GraphInterface
 from src.DiGraph import DiGraph
 import json
+from queue import PriorityQueue
+from Node import Node
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -66,3 +70,66 @@ class GraphAlgo(GraphAlgoInterface):
         except IOError as e:
             print(e)
             return False
+
+    def initGraph(self) -> None:
+        for i in self.g.Nodes.values():
+            i.tag = 0
+            i.weight = math.inf
+
+    def getNode(self, id1: int):
+        return self.g.Nodes[id1]
+
+    def Dijkstra(self, start: Node):
+        self.initGraph()
+        q = PriorityQueue()
+        start.weight = 0
+        q.put(start)
+        while not q.empty():
+            node = q.get()
+            ed = self.g.all_out_edges_of_node(node.id)
+            for i, j in ed.items():
+                neighbor = self.getNode(i)
+                alt = node.weight + j
+                if neighbor.weight > alt:
+                    neighbor.weight = alt
+                    neighbor.tag = node.id
+                    q.put(neighbor)
+
+
+    def shortest_path(self, id1: int, id2: int) -> (float, list):
+        if id1 not in self.g.get_all_v() and id2 not in self.g.get_all_v():
+            return (math.inf, [])
+        self.initGraph()
+        self.Dijkstra(self.getNode(id1))
+        dist = self.getNode(id2).weight
+        path = []
+        rev = self.getNode(id2)
+        while rev != self.getNode(id1):
+            path.append(rev.id)
+            rev = self.getNode(rev.tag)
+        path.append(id1)
+        path.reverse()
+        p = (dist, path)
+        if dist >= math.inf:
+            p = (math.inf, [])
+        return p
+
+
+    def centerPoint(self) -> (int, float):
+
+        min = math.inf
+        ans = 0
+        currMax = 0
+        for i in self.g.Nodes.values():
+            for j in self.g.Nodes.values():
+                ave = self.shortest_path(i.id, j.id)[0]
+                if ave > currMax:
+                    currMax = ave
+            if currMax < min:
+                min = currMax
+                ans = i.id
+            currMax = 0
+        print(ans)
+        print(min)
+        p = (ans, min)
+        return p

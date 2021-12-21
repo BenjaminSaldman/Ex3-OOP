@@ -116,3 +116,6 @@ class DiGraph(GraphInterface):
                 return True
             return False
         return False
+
+    def getNode(self, id1: int):
+        return self.Nodes.get(id1)

@@ -56,11 +56,8 @@ class DiGraph(GraphInterface):
         Note: If the edge already exists or one of the nodes dose not exists the functions will do nothing
         """
         if id1 in self.Nodes and id2 in self.Nodes and id2 not in self.Edges[id1]:
-            if self.Edges[id1] is None:
-                self.Edges[id1] = {}
-                self.Edges[id1][id2] = weight
-            else:
-                self.Edges[id1][id2] = weight
+
+            self.Edges[id1][id2] = weight
             self.MC += 1
             self.edgeCounter += 1
             return True
@@ -117,5 +114,3 @@ class DiGraph(GraphInterface):
             return False
         return False
 
-    def getNode(self, id1: int):
-        return self.Nodes.get(id1)

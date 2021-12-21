@@ -1,11 +1,11 @@
 import math
-
 from src.GraphAlgoInterface import GraphAlgoInterface
 from src.GraphInterface import GraphInterface
 from src.DiGraph import DiGraph
 import json
 from queue import PriorityQueue
 from Node import Node
+import matplotlib.pyplot as plt
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -95,13 +95,14 @@ class GraphAlgo(GraphAlgoInterface):
                     neighbor.tag = node.id
                     q.put(neighbor)
 
-
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         if id1 not in self.g.get_all_v() and id2 not in self.g.get_all_v():
             return (math.inf, [])
         self.initGraph()
         self.Dijkstra(self.getNode(id1))
         dist = self.getNode(id2).weight
+        if dist == math.inf:
+            return (math.inf, [])
         path = []
         rev = self.getNode(id2)
         while rev != self.getNode(id1):
@@ -113,7 +114,6 @@ class GraphAlgo(GraphAlgoInterface):
         if dist >= math.inf:
             p = (math.inf, [])
         return p
-
 
     def centerPoint(self) -> (int, float):
 
@@ -133,3 +133,36 @@ class GraphAlgo(GraphAlgoInterface):
         print(min)
         p = (ans, min)
         return p
+
+    def plot_graph(self) -> None:
+        """
+        Plots the graph.
+        If the nodes have a position, the nodes will be placed there.
+        Otherwise, they will be placed in a random but elegant manner.
+        @return: None
+        """
+        for i in self.g.get_all_v().values():
+            x = y = z = 0
+            if i.location is None:
+                x = (i.id + 20) * (i.id + 20) + 20
+                y = i.id * i.id * i.id
+            else:
+                p = i.location
+                x = p[0]
+                y = p[1]
+                z = p[2]
+            plt.plot(x, y, markersize=10, marker=".", color="red")
+            plt.text(x, y, str(i.id), color="green", fontsize=12)
+            for k in self.g.all_out_edges_of_node(i.id).items():
+                n = self.getNode(k[0])
+                dx = dy = 0
+                if n.location is None:
+                    dx = (n.id + 20) * (n.id + 20) + 20
+                    dy = n.id * n.id * n.id
+                else:
+                    p = n.location
+                    dx = p[0]
+                    dy = p[1]
+
+                plt.annotate("", xy=(x, y), xytext=(dx, dy), arrowprops=dict(arrowstyle="<-"))
+        plt.show()

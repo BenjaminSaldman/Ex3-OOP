@@ -4,6 +4,7 @@ class Node:
         self.location = location
         self.tag = 0
         self.weight = 0
+
     def getId(self):
         self.id
     def __lt__(self, obj):

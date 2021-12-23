@@ -6,6 +6,7 @@ import json
 from queue import PriorityQueue
 from Node import Node
 import matplotlib.pyplot as plt
+from queue import Queue
 
 
 class GraphAlgo(GraphAlgoInterface):
@@ -19,15 +20,20 @@ class GraphAlgo(GraphAlgoInterface):
         return self.g
 
     def load_from_json(self, file_name: str) -> bool:
-        g = DiGraph()
+        """
+
+        :param file_name:
+        :return: true if the load succeed, else return false.
+        """
+        g = DiGraph()  # create new graph.
         try:
-            with open(file_name, "r") as f:
-                d = json.load(f)
+            with open(file_name, "r") as f:  # Opening the file.
+                d = json.load(f)  # d contains the json object.
         except IOError as e:
             print(e)
             return False
-        for i in d["Nodes"]:
-            if "pos" not in i.keys():
+        for i in d["Nodes"]:  # Extract the nodes from the object.
+            if "pos" not in i.keys():  # Check case for T0 , if the nodes doesn't have location just add the id.
                 g.add_node(i["id"])
             else:
                 temp = i["pos"].split(",")
@@ -52,18 +58,22 @@ class GraphAlgo(GraphAlgoInterface):
                 g = {}
                 Nodes = []
                 Edges = []
-
+                """
+                Adding the nodes and the edges to Nodes[] and Edges[].
+                """
                 for i in self.g.get_all_v().values():
                     if i.location is None:
                         Nodes.append({"id": i.id})
                     else:
                         Nodes.append(
-                            {"id": i.id,
-                             "pos": str(i.location[0]) + "," + str(i.location[1]) + "," + str(i.location[2])})
+                            {
+                                "pos": str(i.location[0]) + "," + str(i.location[1]) + "," + str(i.location[2]),
+                                "id": i.id})
                     for j, k in self.g.all_out_edges_of_node(i.id).items():
                         Edges.append({"src": i.id, "w": k, "dest": j})
                 g["Edges"] = Edges
                 g["Nodes"] = Nodes
+                # Creating the json file.
                 json.dump(g, fp=f, indent=6)
                 return True
 
@@ -71,8 +81,8 @@ class GraphAlgo(GraphAlgoInterface):
             print(e)
             return False
 
-    def initGraph(self) -> None:
-        for i in self.g.Nodes.values():
+    def initGraph(self, graph: DiGraph) -> None:
+        for i in graph.Nodes.values():
             i.tag = 0
             i.weight = math.inf
 
@@ -80,7 +90,7 @@ class GraphAlgo(GraphAlgoInterface):
         return self.g.Nodes[id1]
 
     def Dijkstra(self, start: Node):
-        self.initGraph()
+        self.initGraph(self.g)
         q = PriorityQueue()
         start.weight = 0
         q.put(start)
@@ -98,7 +108,7 @@ class GraphAlgo(GraphAlgoInterface):
     def shortest_path(self, id1: int, id2: int) -> (float, list):
         if id1 not in self.g.get_all_v() and id2 not in self.g.get_all_v():
             return (math.inf, [])
-        self.initGraph()
+        self.initGraph(self.g)
         self.Dijkstra(self.getNode(id1))
         dist = self.getNode(id2).weight
         if dist == math.inf:
@@ -166,3 +176,68 @@ class GraphAlgo(GraphAlgoInterface):
 
                 plt.annotate("", xy=(x, y), xytext=(dx, dy), arrowprops=dict(arrowstyle="<-"))
         plt.show()
+
+    def transpose(self) -> DiGraph:
+        tr = DiGraph()
+        for i in self.g.Nodes.values():
+            tr.add_node(i.id, i.location)
+        for i in self.g.Nodes.values():
+            for j, k in self.g.all_out_edges_of_node(i.id).items():
+                tr.add_edge(j, i.id, k)
+        return tr
+
+    def BFS(self, start: int, graph: DiGraph) -> None:
+        q = Queue()
+        n = graph.Nodes.get(start)
+        q.put(n)
+        n.tag = 1
+        while not q.empty():
+            n = q.get()
+            for i in graph.all_out_edges_of_node(n.id):
+                if graph.Nodes[i].tag != 1:
+                    graph.Nodes[i].tag = 1
+                    q.put(graph.Nodes[i])
+
+    def isConnected(self) -> bool:
+        if self.g is None:
+            return True
+        if len(self.g.get_all_v()) <= 1:
+            return True
+        if len(self.g.get_all_v()) > self.g.e_size() + 1:
+            return False
+        tr = self.transpose()
+        self.initGraph(self.g)
+        self.initGraph(tr)
+        self.BFS(0, self.g)
+        self.BFS(0, tr)
+        for i in self.g.Nodes.values():
+            if i.tag != 1:
+                return False
+        for i in tr.Nodes.values():
+            if i.tag != 1:
+                return False
+        return True
+
+    def TSP(self, node_lst: list[int]) -> (list[int], float):
+        """
+        Finds the shortest path that visits all the nodes in the list
+        :param node_lst: A list of nodes id's
+        :return: A list of the nodes id's in the path, and the overall distance
+        """
+        print(self.isConnected())
+        if self.isConnected() == False:
+            return ([], math.inf)
+        if len(node_lst) <= 1:
+            return ([node_lst.pop(), 0])
+        ans = []
+        dist = 0
+        for i in range(0, len(node_lst) - 1):
+            curr = node_lst[i]
+            next = node_lst[i + 1]
+            k = (self.shortest_path(curr, next)[1])
+            dist += self.shortest_path(curr, next)[0]
+            for j in k:
+                if j not in ans:
+                    ans.append(j)
+        p = (ans, dist)
+        return p

@@ -9,6 +9,9 @@ class DiGraph(GraphInterface):
         self.MC = 0
         self.edgeCounter = 0
 
+    def __repr__(self):
+        return f"|V|={self.v_size()},|E|={self.e_size()}"
+
     def v_size(self) -> int:
         return len(self.Nodes)
 
@@ -56,7 +59,6 @@ class DiGraph(GraphInterface):
         Note: If the edge already exists or one of the nodes dose not exists the functions will do nothing
         """
         if id1 in self.Nodes and id2 in self.Nodes and id2 not in self.Edges[id1]:
-
             self.Edges[id1][id2] = weight
             self.MC += 1
             self.edgeCounter += 1
@@ -113,4 +115,3 @@ class DiGraph(GraphInterface):
                 return True
             return False
         return False
-

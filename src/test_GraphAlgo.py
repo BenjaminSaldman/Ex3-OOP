@@ -21,6 +21,17 @@ class MyTestCase(unittest.TestCase):
         self.assertNotEqual(a, a0)
         self.assertNotEqual(a, a1)
 
+    def test_save_to_json(self):
+        a = GraphAlgo()
+        a.load_from_json("A0.json")
+        a.save_to_json("testing.json")
+        g = a.get_graph()
+        a.load_from_json("testing.json")
+        g1 = a.get_graph()
+        self.assertEqual(g.Nodes, g1.Nodes)
+        self.assertEqual(g.Edges, g1.Edges)
+
+
     def test_initGraph(self):
         a = GraphAlgo()
         a.load_from_json("A0.json")

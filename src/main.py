@@ -105,4 +105,9 @@ def check3():
 
 
 if __name__ == '__main__':
-    check()
+    #check()
+    g_algo=GraphAlgo()
+    g_algo.load_from_json('../data/A0.json')
+    print(g_algo.g.Nodes)
+    #g_algo.g.remove_node(0)
+    g_algo.plot_graph()

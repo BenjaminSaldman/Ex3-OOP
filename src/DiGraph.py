@@ -91,7 +91,6 @@ class DiGraph(GraphInterface):
             into = self.all_in_edges_of_node(node_id)
             self.MC += len(self.Edges[node_id])
             self.edgeCounter -= len(self.Edges[node_id])
-            del self.Nodes[node_id]
             for i in into.keys():
                 self.remove_edge(i, node_id)
             self.Nodes.pop(node_id)

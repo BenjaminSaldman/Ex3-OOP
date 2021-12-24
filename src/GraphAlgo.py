@@ -228,7 +228,7 @@ class GraphAlgo(GraphAlgoInterface):
         if self.isConnected() == False:
             return ([], math.inf)
         if len(node_lst) <= 1:
-            return ([node_lst.pop(), 0])
+            return ([node_lst, 0])
         ans = []
         dist = 0
         for i in range(0, len(node_lst) - 1):

@@ -139,8 +139,7 @@ class GraphAlgo(GraphAlgoInterface):
                 min = currMax
                 ans = i.id
             currMax = 0
-        print(ans)
-        print(min)
+
         p = (ans, min)
         return p
 

@@ -223,7 +223,6 @@ class GraphAlgo(GraphAlgoInterface):
         :param node_lst: A list of nodes id's
         :return: A list of the nodes id's in the path, and the overall distance
         """
-        print(self.isConnected())
         if self.isConnected() == False:
             return ([], math.inf)
         if len(node_lst) <= 1:

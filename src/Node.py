@@ -6,6 +6,10 @@ class Node:
         self.weight = 0
 
     def getId(self):
+        """
+
+        :return: node id.
+        """
         self.id
     def __lt__(self, obj):
         """self < obj."""

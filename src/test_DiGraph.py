@@ -3,6 +3,9 @@ from DiGraph import DiGraph
 from GraphAlgo import GraphAlgo
 
 class MyTestCase(unittest.TestCase):
+    """
+    Tester class for DiGraph.
+    """
     def test_v_size(self):
         a = GraphAlgo()
         a.load_from_json("A0.json")

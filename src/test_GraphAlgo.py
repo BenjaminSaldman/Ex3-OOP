@@ -4,6 +4,9 @@ from GraphAlgo import GraphAlgo
 from Node import Node
 
 class MyTestCase(unittest.TestCase):
+    """
+    Tester class for GraphAlgo.
+    """
     def test_get_graph(self):
         a = GraphAlgo()
         a.load_from_json("A0.json")

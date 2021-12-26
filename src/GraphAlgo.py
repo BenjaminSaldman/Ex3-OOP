@@ -82,51 +82,75 @@ class GraphAlgo(GraphAlgoInterface):
             return False
 
     def initGraph(self, graph: DiGraph) -> None:
+        """
+
+        :param graph:
+        :return: init the tag to 0 and weight to inf.
+        """
         for i in graph.Nodes.values():
             i.tag = 0
             i.weight = math.inf
 
     def getNode(self, id1: int):
+        """
+
+        :param id1:
+        :return: node with id1.
+        """
         return self.g.Nodes[id1]
 
     def Dijkstra(self, start: Node):
+        """
+
+        :param start:
+        :return: implement dijkstra algorithm on the graph.
+        """
         self.initGraph(self.g)
         q = PriorityQueue()
-        start.weight = 0
-        q.put(start)
+        start.weight = 0  # Start point weight = 0.
+        q.put(start)  # Enter the point to the priority queue.
         while not q.empty():
-            node = q.get()
+            node = q.get()  # Get the node with the minimum weight.
             ed = self.g.all_out_edges_of_node(node.id)
-            for i, j in ed.items():
+            for i, j in ed.items():  # Iterate over the edges.
                 neighbor = self.getNode(i)
                 alt = node.weight + j
-                if neighbor.weight > alt:
+                if neighbor.weight > alt:  # If we found shorter path, update the weight and enter the node to the queue.
                     neighbor.weight = alt
                     neighbor.tag = node.id
                     q.put(neighbor)
 
     def shortest_path(self, id1: int, id2: int) -> (float, list):
+        """
+               Returns the shortest path from node id1 to node id2 using Dijkstra's Algorithm
+               @param id1: The start node id
+               @param id2: The end node id
+               @return: The distance of the path, a list of the nodes ids that the path goes through
+        """
         if id1 not in self.g.get_all_v() and id2 not in self.g.get_all_v():
             return (math.inf, [])
         self.initGraph(self.g)
-        self.Dijkstra(self.getNode(id1))
+        self.Dijkstra(self.getNode(id1))  # Run dijkstra on the graph.
         dist = self.getNode(id2).weight
-        if dist == math.inf:
+        if dist == math.inf:  # If there is not path, return inf.
             return (math.inf, [])
         path = []
-        rev = self.getNode(id2)
+        rev = self.getNode(id2)  # Adding the id's to the list in reverse.
         while rev != self.getNode(id1):
             path.append(rev.id)
             rev = self.getNode(rev.tag)
         path.append(id1)
-        path.reverse()
+        path.reverse()  # reverse the list: id1.....id2.
         p = (dist, path)
         if dist >= math.inf:
             p = (math.inf, [])
         return p
 
     def centerPoint(self) -> (int, float):
-
+        """
+                Finds the node that has the shortest distance to it's farthest node.
+                :return: The nodes id, min-maximum distance
+        """
         min = math.inf
         ans = 0
         currMax = 0
@@ -152,7 +176,7 @@ class GraphAlgo(GraphAlgoInterface):
         """
         for i in self.g.get_all_v().values():
             x = y = z = 0
-            if i.location is None:
+            if i.location is None:  # T0 case, calculate random place.
                 x = (i.id + 20) * (i.id + 20) + 20
                 y = i.id * i.id * i.id
             else:
@@ -177,6 +201,10 @@ class GraphAlgo(GraphAlgoInterface):
         plt.show()
 
     def transpose(self) -> DiGraph:
+        """
+
+        :return: the transpose graph of g.
+        """
         tr = DiGraph()
         for i in self.g.Nodes.values():
             tr.add_node(i.id, i.location)
@@ -186,6 +214,12 @@ class GraphAlgo(GraphAlgoInterface):
         return tr
 
     def BFS(self, start: int, graph: DiGraph) -> None:
+        """
+
+        :param start: start point.
+        :param graph: graph to run BFS on.
+        :return: BFS scan on the graph.
+        """
         q = Queue()
         n = graph.Nodes.get(start)
         q.put(n)
@@ -198,6 +232,10 @@ class GraphAlgo(GraphAlgoInterface):
                     q.put(graph.Nodes[i])
 
     def isConnected(self) -> bool:
+        """
+
+        :return: True if the graph is connected, else false.
+        """
         if self.g is None:
             return True
         if len(self.g.get_all_v()) <= 1:
@@ -209,9 +247,11 @@ class GraphAlgo(GraphAlgoInterface):
         self.initGraph(tr)
         self.BFS(0, self.g)
         self.BFS(0, tr)
+        # Check if we visited all the nodes in the original graph from 0.
         for i in self.g.Nodes.values():
             if i.tag != 1:
                 return False
+        # Check if there is a path from all nodes to the start (0).
         for i in tr.Nodes.values():
             if i.tag != 1:
                 return False
@@ -223,8 +263,8 @@ class GraphAlgo(GraphAlgoInterface):
         :param node_lst: A list of nodes id's
         :return: A list of the nodes id's in the path, and the overall distance
         """
-        if self.isConnected() == False:
-            return ([], math.inf)
+        # if self.isConnected() == False:
+        #     return ([], math.inf)
         if len(node_lst) <= 1:
             return ([node_lst, 0])
         ans = []

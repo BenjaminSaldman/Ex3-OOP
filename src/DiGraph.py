@@ -10,6 +10,10 @@ class DiGraph(GraphInterface):
         self.edgeCounter = 0
 
     def __repr__(self):
+        """
+
+        :return:  representative string.
+        """
         return f"|V|={self.v_size()},|E|={self.e_size()}"
 
     def v_size(self) -> int:
